@@ -155,3 +155,5 @@ void mp_LobbyEnter(CPacket& packet, bool success, std::string enterMsg, vector<L
 
 ### 예정
 - 서버 프로젝트에 빌드시 자동으로 패킷정의 엑셀파일로 _Auto 파일들을 프로젝트 디렉토리에 생성하게 환경 구축 필요
+  
+  
