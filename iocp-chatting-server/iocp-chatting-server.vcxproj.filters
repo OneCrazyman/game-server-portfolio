@@ -1,17 +1,108 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <ClInclude Include="define.h" />
+    <ClInclude Include="LanServer.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="CRingBuffer.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="CPacket.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Lobby.h">
+      <Filter>Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkEvents.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemLogger.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleHandler.h" />
+    <ClInclude Include="PacketProcess_Auto.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandler_Auto.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="ContentsProcess.h">
+      <Filter>Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="NetServer.h">
+      <Filter>NetLib</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketMaker_Auto.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="LanServer.cpp">
+      <Filter>NetLib</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>NetLib</Filter>
+    </ClCompile>
+    <ClCompile Include="CRingBuffer.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby.cpp">
+      <Filter>Contents</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp">
+      <Filter>NetLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemLogger.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleHandler.cpp" />
+    <ClCompile Include="Session.cpp">
+      <Filter>NetLib</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketProcess_Auto.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="ContentsProcess.cpp">
+      <Filter>Contents</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketMaker_Auto.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Util">
+      <UniqueIdentifier>{cbbc08c9-ccc3-4eac-99ed-c3aff99e6c25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="NetLib">
+      <UniqueIdentifier>{df26b9a9-86a8-4bf3-9aa6-ab0d55c07dfc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Contents">
+      <UniqueIdentifier>{37d7b831-2526-4e8e-955e-b640418f92bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{29176ffb-9826-4364-803d-aa137713498b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Packet_Config.xlsx" />
+    <None Include="readme.md" />
   </ItemGroup>
 </Project>
