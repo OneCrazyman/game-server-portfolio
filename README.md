@@ -4,12 +4,12 @@
 
 서버 프로그래머를 목표하는 개발자의 프로젝트 포트폴리오입니다. IOCP 기반 네트워크 서버, 패킷 자동화 도구 등 서버 프로그래밍 중심으로 구성되어 있습니다.
 
-## [iocp-chatting-server](./iocp-chatting-server/README.md)  
+## [iocp-chatting-server](./iocp-chatting-server/)  
 
 > IOCP 기반 멀티스레드 채팅 서버  
 > 비동기 I/O 모델을 활용한 효율적인 세션 관리 및 패킷 처리 구조 구현
   
-## [packet-code-generator](./packet-code-generator/README.md)  
+## [packet-code-generator](./packet-code-generator/)  
 > Excel로 패킷 정의를 관리하고 Stub / Proxy 코드를 자동 생성하는 유틸  
 > 서버·클라이언트 간 패킷 구조 일관성을 유지하고 개발 효율성을 향상하는것이 목표
 
