@@ -39,7 +39,6 @@ public:
 
 	void OnRecv(DWORD transferred);
 	void OnSend(DWORD transferred);
-	void OnMessage(uint16_t type, CPacket* packet) const;
 
 	void SendPacket(CPacket&);
 
@@ -62,6 +61,8 @@ public:
 	void DecrementRefCountAndRelease();
 	void DecrementRefCountAndReleaseLock();
 protected:
+	void OnMessage(uint16_t type, CPacket* packet) const;
+
 	bool CheckHeader(PktHeader&);
 	void CloseSocket() const { closesocket(socket_); }
 
