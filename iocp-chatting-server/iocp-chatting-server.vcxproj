@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,6 +119,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,38 +128,38 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleHandler.cpp" />
-    <ClCompile Include="ContentsProcess.cpp" />
-    <ClCompile Include="CRingBuffer.cpp" />
-    <ClCompile Include="LanServer.cpp" />
-    <ClCompile Include="Lobby.cpp" />
+    <ClCompile Include="Contents\ContentsProcess.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PacketMaker_Auto.cpp" />
-    <ClCompile Include="PacketProcess_Auto.cpp" />
-    <ClCompile Include="Server.cpp" />
-    <ClCompile Include="Session.cpp" />
-    <ClCompile Include="SessionManager.cpp" />
-    <ClCompile Include="SystemLogger.cpp" />
+    <ClCompile Include="NetLib\LanServer.cpp" />
+    <ClCompile Include="NetLib\Server.cpp" />
+    <ClCompile Include="NetLib\Session.cpp" />
+    <ClCompile Include="NetLib\SessionManager.cpp" />
+    <ClCompile Include="Packet\PacketMaker_Auto.cpp" />
+    <ClCompile Include="Packet\PacketProcess_Auto.cpp" />
+    <ClCompile Include="Util\CRingBuffer.cpp" />
+    <ClCompile Include="Util\SystemLogger.cpp" />
+    <ClCompile Include="Contents\Lobby.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleHandler.h" />
-    <ClInclude Include="ContentsProcess.h" />
-    <ClInclude Include="CPacket.h" />
-    <ClInclude Include="CRingBuffer.h" />
+    <ClInclude Include="Contents\ContentsProcess.h" />
+    <ClInclude Include="Contents\Lobby.h" />
+    <ClInclude Include="Contents\User.h" />
     <ClInclude Include="define.h" />
-    <ClInclude Include="LanServer.h" />
-    <ClInclude Include="Lobby.h" />
-    <ClInclude Include="NetServer.h" />
-    <ClInclude Include="NetworkEvents.h" />
-    <ClInclude Include="PacketHandler_Auto.h" />
-    <ClInclude Include="PacketMaker_Auto.h" />
-    <ClInclude Include="PacketProcess_Auto.h" />
-    <ClInclude Include="Server.h" />
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="SessionManager.h" />
-    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="NetLib\LanServer.h" />
+    <ClInclude Include="NetLib\NetServer.h" />
+    <ClInclude Include="NetLib\NetworkEvents.h" />
+    <ClInclude Include="NetLib\Server.h" />
+    <ClInclude Include="NetLib\Session.h" />
+    <ClInclude Include="NetLib\SessionManager.h" />
+    <ClInclude Include="Packet\PacketHandler_Auto.h" />
+    <ClInclude Include="Packet\PacketMaker_Auto.h" />
+    <ClInclude Include="Packet\PacketProcess_Auto.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="SystemLogger.h" />
-    <ClInclude Include="User.h" />
+    <ClInclude Include="Util\CPacket.h" />
+    <ClInclude Include="Util\CRingBuffer.h" />
+    <ClInclude Include="Util\Singleton.h" />
+    <ClInclude Include="Util\SystemLogger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packet_Config.xlsx" />

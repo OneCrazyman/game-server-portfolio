@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Server.h"
+#include "NetLib/Server.h"
 
 class ConsoleHandler
 {

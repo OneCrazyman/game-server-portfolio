@@ -1,14 +1,13 @@
 #pragma once
 #include "stdafx.h"
-#include "NetworkEvents.h"
-#include "Singleton.h"
+#include "NetLib/NetworkEvents.h"
+#include "Util/Singleton.h"
 #include "User.h"
 
 class Lobby : public Singleton<Lobby> ,public NetworkEvents
 {
 	friend class Singleton<Lobby>;
 public:
-	// NetworkEvents을(를) 통해 상속됨
 	void OnAccept(uint32_t sessionId) override;
 	void OnRelease(uint32_t sessionId) override;
 

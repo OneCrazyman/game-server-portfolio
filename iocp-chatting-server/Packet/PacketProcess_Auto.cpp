@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "PacketProcess_Auto.h"
 #include "PacketHandler_Auto.h"
-#include "SystemLogger.h"
-#include "Session.h"
-#include "CPacket.h"
-#include "ContentsProcess.h"
+
+#include "Util/SystemLogger.h"
+#include "Util/CPacket.h"
+#include "NetLib/Session.h"
+#include "Contents/ContentsProcess.h"
 
 using enum SystemLogger::LOG_LEVEL;
 

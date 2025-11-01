@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Session.h"
-#include "Singleton.h"
+#include "Util/Singleton.h"
 #include "define.h"
 
 class NetworkEvents;

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Server.h"
-#include "CPacket.h"
+#include "Util/CPacket.h"
 #include "SessionManager.h"
 
 class NetworkEvents;

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Lobby.h"
-#include "CPacket.h"
-#include "SessionManager.h"
-#include "SystemLogger.h"
-#include "PacketMaker_Auto.h"
+#include "Util/CPacket.h"
+#include "NetLib/SessionManager.h"
+#include "Util/SystemLogger.h"
+#include "Packet/PacketMaker_Auto.h"
 
 using enum SystemLogger::LOG_LEVEL;
 

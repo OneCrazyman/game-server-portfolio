@@ -2,10 +2,10 @@
 #include "Session.h"
 
 #include "define.h"
-#include "CPacket.h"
-#include "SystemLogger.h"
+#include "Util/CPacket.h"
+#include "Util/SystemLogger.h"
 #include "SessionManager.h"
-#include "PacketProcess_Auto.h"
+#include "Packet/PacketProcess_Auto.h"
 
 using enum SystemLogger::LOG_LEVEL;
 

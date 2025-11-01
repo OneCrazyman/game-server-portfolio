@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Server.h"
-#include "NetServer.h"
+#include "NetLib/Server.h"
+#include "NetLib/NetServer.h"
 #include "ConsoleHandler.h"
-#include "Lobby.h"
-#include "SystemLogger.h"
+#include "Contents/Lobby.h"
+#include "Util/SystemLogger.h"
 
 int main()
 {

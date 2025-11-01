@@ -1,7 +1,7 @@
 #pragma once
-#include "Singleton.h"
+#include "Util/Singleton.h"
 #include "PacketHandler_Auto.h"
-#include "ContentsProcess.h"
+#include "Contents/ContentsProcess.h"
 
 class Session;
 class CPacket;

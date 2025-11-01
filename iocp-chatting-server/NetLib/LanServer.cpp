@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "LanServer.h"
-#include "SystemLogger.h"
+#include "Util/SystemLogger.h"
 #include "SessionManager.h"
-#include "lobby.h"
+#include "Contents/lobby.h"
 #include "define.h"
 
 using enum SystemLogger::LOG_LEVEL;

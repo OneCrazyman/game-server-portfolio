@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "CRingBuffer.h"
+#include "Util/CRingBuffer.h"
 #include "define.h"
 
 struct SessionInfo;
