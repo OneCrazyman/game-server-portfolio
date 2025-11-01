@@ -54,9 +54,10 @@ namespace proxy_stub
             var sb = new StringBuilder();
             sb.AppendLine("""
             #pragma once
-            #include "Singleton.h"
             #include "PacketHandler_Auto.h"
-            #include "ContentsProcess.h"
+
+            #include "Util/Singleton.h"
+            #include "Contents/ContentsProcess.h"
 
             class Session;
             class CPacket;
@@ -89,11 +90,11 @@ namespace proxy_stub
             #include "stdafx.h"
             #include "PacketProcess_Auto.h"
             #include "PacketHandler_Auto.h"
-            #include "SystemLogger.h"
-            #include "Session.h"
-            #include "CPacket.h"
-            #include "ContentsProcess.h"
-            #include "PacketDefine.h" 
+
+            #include "Util/SystemLogger.h"
+            #include "Util/CPacket.h"
+            #include "NetLib/Session.h"
+            #include "Contents/ContentsProcess.h"
 
             using enum SystemLogger::LOG_LEVEL;
 
@@ -135,8 +136,10 @@ namespace proxy_stub
         public string GenerateMakerHeader()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("#pragma once");
-            sb.AppendLine("#include \"CPacket.h\"\n");
+            sb.AppendLine("""
+            #pragma once
+            #include "Util/CPacket.h"
+            """); 
 
             foreach (var p in serverPackets_)
             {
@@ -155,11 +158,12 @@ namespace proxy_stub
         public string GenerateMakerCpp()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("#include \"stdafx.h\"");
-            sb.AppendLine("#include \"PacketMaker_Auto.h\"");
-            sb.AppendLine("#include \"define.h\"");
+            sb.AppendLine("""
+            #include "stdafx.h"
+            #include "PacketMaker_Auto.h"
+            #include "define.h"
 
-            sb.AppendLine("\n");
+            """);
 
             int typeIndex = 0;
 
