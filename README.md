@@ -1,8 +1,6 @@
 # game-server-portfolio
 
-안녕하세요😊
-
-서버 프로그래머를 목표하는 개발자의 프로젝트 포트폴리오입니다. IOCP 기반 네트워크 서버, 패킷 자동화 도구 등 서버 프로그래밍 중심으로 구성되어 있습니다.
+게임 서버 프로젝트 포트폴리오입니다.
 
 ## [iocp-chatting-server](./iocp-chatting-server/)  
 
