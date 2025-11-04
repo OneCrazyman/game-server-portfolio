@@ -145,24 +145,10 @@ void LanServer::AcceptThread()
 				continue;
 			}
 		}
-		SessionInfo sessionInfo = {
-			config_.MaxRecvQsize,
-			config_.MaxSendQsize
-		};
 
-		auto session = sessionManager_.CreateSession(clientSocket, clientaddr, sessionInfo);
-		if (!session) continue;
 
-		bool associated = AssociateDeviceWithCompletionPort(completionPort_, (HANDLE)clientSocket, (ULONG_PTR)session.get());
-		if (!associated) {
-			sessionManager_.DisconnectSession(session->Id());
-			continue;
-		}
+		OnAccept(clientSocket,clientaddr);
 
-		bool recved = session->PostRecv();
-		if (!recved) continue;
-
-        networkEvents_->OnAccept(session->Id());
 	}
 
 	SLog(SYSTEM_LEVEL, L"Shutdown AcceptThread ## id: %d", std::this_thread::get_id());
@@ -214,4 +200,27 @@ void LanServer::CloseWorkerThreads()
 	for (uint32_t i = 0; i < numberOfWorkerThreads_; i++) {
 		PostQueuedCompletionStatus(completionPort_, 0, 0, 0);
 	}
+}
+
+void LanServer::OnAccept(SOCKET clientSocket, SOCKADDR_IN& clientaddr)
+{
+	SessionInfo sessionInfo = {
+		config_.MaxRecvQsize,
+		config_.MaxSendQsize,
+	};
+	auto session = sessionManager_.CreateSession(clientSocket, clientaddr, sessionInfo);
+	if (!session) 
+		return;
+
+	bool associated = this->AssociateDeviceWithCompletionPort(completionPort_, (HANDLE)clientSocket, (ULONG_PTR)session.get());
+	if (!associated) {
+		sessionManager_.DisconnectSession(session->Id());
+		return;
+	}
+
+	bool recved = session->PostRecv();
+	if (!recved) 
+		return;
+
+	networkEvents_->OnConnect(session->Id());
 }
