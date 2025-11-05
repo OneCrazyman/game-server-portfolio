@@ -133,11 +133,11 @@ void LanServer::AcceptThread()
 		{
 			int error = WSAGetLastError();
 			switch (error) {
-			case 10054:
+			case SOCK_ERR_RST:
 				SLog(DEBUG_LEVEL, L"accept(%d)", error);
 				continue;
-			case 10004:
-			case 10038:
+			case SOCK_ERR_INTR:
+			case SOCK_ERR_NOTSOCK:
 				// Shutdown AcceptThread
 				break;
 			default:
