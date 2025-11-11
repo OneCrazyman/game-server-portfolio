@@ -1,9 +1,8 @@
 #pragma once
-#include "stdafx.h"
-
+struct SessionInfo;
 class NetworkEvents
 {
 public:
-	virtual void OnAccept(uint32_t sessionId) = 0;
-	virtual void OnRelease(uint32_t sessionId) = 0;
+	virtual uint32_t OnConnect(uint32_t sessionId) = 0;
+	virtual void OnRelease(uint32_t sessionId, SessionInfo& sessionInfo) = 0;
 };

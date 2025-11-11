@@ -13,9 +13,9 @@ class SessionManager : public Singleton<SessionManager>
 public:
 	void Init(NetworkEvents* networkEvents,uint32_t maxSession, uint32_t maxRecvQ, uint32_t maxSendQ);
 
-	std::shared_ptr<Session> CreateSession(SOCKET clientSocket, SOCKADDR_IN& clientaddr, SessionInfo& sessionInfo);
+	std::shared_ptr<Session> CreateSession(SOCKET clientSocket, SOCKADDR_IN& clientaddr, SessionConfig& sessionInfo);
 
-	void DisconnectSession(uint32_t id);
+	void DisconnectSession(uint32_t id, std::unique_lock<std::mutex> lock);
 
 	std::shared_ptr<Session> GetSessionPointer(uint32_t id);
 private:

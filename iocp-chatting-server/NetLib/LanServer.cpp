@@ -101,7 +101,7 @@ void LanServer::WorkerThread()
 
 		if (cbTransferred == 0)
 		{
-			session->DecrementRefCountAndReleaseLock();
+			session->DecrementRefCountAndRelease();
 			continue;
 		}
 
@@ -145,10 +145,7 @@ void LanServer::AcceptThread()
 				continue;
 			}
 		}
-
-
 		OnAccept(clientSocket,clientaddr);
-
 	}
 
 	SLog(SYSTEM_LEVEL, L"Shutdown AcceptThread ## id: %d", std::this_thread::get_id());
@@ -204,17 +201,18 @@ void LanServer::CloseWorkerThreads()
 
 void LanServer::OnAccept(SOCKET clientSocket, SOCKADDR_IN& clientaddr)
 {
-	SessionInfo sessionInfo = {
+	SessionConfig sessionConfig = {
 		config_.MaxRecvQsize,
 		config_.MaxSendQsize,
 	};
-	auto session = sessionManager_.CreateSession(clientSocket, clientaddr, sessionInfo);
+
+	auto session = sessionManager_.CreateSession(clientSocket, clientaddr, sessionConfig);
 	if (!session) 
 		return;
 
 	bool associated = this->AssociateDeviceWithCompletionPort(completionPort_, (HANDLE)clientSocket, (ULONG_PTR)session.get());
 	if (!associated) {
-		sessionManager_.DisconnectSession(session->Id());
+		sessionManager_.DisconnectSession(session->Id(),std::unique_lock<std::mutex>(session->Mutex()));	
 		return;
 	}
 
@@ -222,5 +220,6 @@ void LanServer::OnAccept(SOCKET clientSocket, SOCKADDR_IN& clientaddr)
 	if (!recved) 
 		return;
 
-	networkEvents_->OnConnect(session->Id());
+	uint32_t userId = networkEvents_->OnConnect(session->Id());
+	session->SetUserId(userId);
 }

@@ -11,5 +11,5 @@ void ContentsProcess::OnEcho(uint32_t sessionId, int64_t msg)
 		return;
 	}
 
-	Lobby::Instance().ChatUnicast(session->GetUserId(), msg);
+	Lobby::Instance().ChatUnicast(session->UserId(), msg);
 }

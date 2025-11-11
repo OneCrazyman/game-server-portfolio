@@ -6,16 +6,16 @@
 
 using enum SystemLogger::LOG_LEVEL;
 
-std::shared_ptr<Session> SessionManager::CreateSession(SOCKET clientSocket, SOCKADDR_IN& clientaddr, SessionInfo& sessionInfo)
+std::shared_ptr<Session> SessionManager::CreateSession(SOCKET clientSocket, SOCKADDR_IN& clientaddr, SessionConfig& sessionConfig)
 {
-	PrepareAsyncSendBuffer(clientSocket);
-	SetLingerOptionRST(clientSocket);
+	this->PrepareAsyncSendBuffer(clientSocket);
+	this->SetLingerOptionRST(clientSocket);
 
 	uint32_t sessionId;
-	if (GetIdLock(sessionId) == false) 
+	if (this->GetIdLock(sessionId) == false) 
 		return nullptr;
 
-    sessions_[sessionId].get()->Init(clientSocket, sessionId, clientaddr, sessionInfo);
+    sessions_[sessionId].get()->Init(clientSocket, sessionId, clientaddr, sessionConfig);
 	return sessions_[sessionId];
 }
 
@@ -27,19 +27,30 @@ void SessionManager::Init(NetworkEvents* networkEvents, uint32_t maxSession, uin
 	InitSessionIdQueue();
 }
 
-void SessionManager::DisconnectSession(uint32_t id)
+void SessionManager::DisconnectSession(uint32_t id,std::unique_lock<std::mutex> lock)
 {
+	if (!lock.owns_lock()) {
+		SLog(ERROR_LEVEL, L"# none lock");
+
+	};
 	auto session = sessions_[id];
+
+	session->CloseSocket();
+	SessionInfo info;
+	info.sessionId = id;
+	info.userId = session->UserId();
+	networkEvents_->OnRelease(id, info);
 	session->Clear();
+	lock.unlock();
+	
 	this->FreeIdLock(id);
-	networkEvents_->OnRelease(id);
 	SLog(DEBUG_LEVEL, L"[TCP server] client disconnect: ip = %ls,port = %d\n",session->Ip(),session->Port());
 }
 
 std::shared_ptr<Session> SessionManager::GetSessionPointer(uint32_t id)
 {
 	auto session = sessions_[id];
-	if (session->IsActiveLock() == false)
+	if (!session->IsActive())
 		return nullptr;
 	return session;
 }

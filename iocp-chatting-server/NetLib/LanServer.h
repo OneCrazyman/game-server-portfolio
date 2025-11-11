@@ -23,6 +23,8 @@ protected:
 	void CloseAcceptThread();
 	void CloseWorkerThreads();
 
+	void OnAccept(SOCKET,SOCKADDR_IN&);
+
 protected:
 	NetworkEvents* networkEvents_;
 	DWORD numberOfConcurrentThreads_ = 0;

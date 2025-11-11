@@ -4,18 +4,19 @@
 #include "Util/Singleton.h"
 #include "User.h"
 
+struct SessionInfo;
 class Lobby : public Singleton<Lobby> ,public NetworkEvents
 {
 	friend class Singleton<Lobby>;
 public:
-	void OnAccept(uint32_t sessionId) override;
-	void OnRelease(uint32_t sessionId) override;
+	uint32_t OnConnect(uint32_t sessionId) override;
+	void OnRelease(uint32_t sessionId, SessionInfo& sessionInfo) override;
 
 	void ChatUnicast(uint32_t userId, int64_t msg);
 private:
 	Lobby() = default;
 
-	void CreateUser(uint32_t sessionId);
+	uint32_t CreateUser(uint32_t sessionId);
 	void DeleteUser(uint32_t sessionId);
 
 	// user managing

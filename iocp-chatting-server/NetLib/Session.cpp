@@ -9,7 +9,7 @@
 
 using enum SystemLogger::LOG_LEVEL;
 
-void Session::Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, SessionInfo& sessionInfo)
+void Session::Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, SessionConfig& sessionInfo)
 {
 	WCHAR ip[INET_ADDRSTRLEN];
 	InetNtop(AF_INET, &clientaddr.sin_addr, ip, _countof(ip));
@@ -40,39 +40,38 @@ void Session::Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, Se
 void Session::ClearLock()
 {
 	std::lock_guard<std::mutex> lock(mutex_);
-	this->CloseSocket();
-	state_ = STATE::INACTIVE;
+	this->Clear();
 }
 
 void Session::Clear()
 {
-	this->CloseSocket();
 	state_ = STATE::INACTIVE;
 }
 
 bool Session::PostRecv()
 {
-	{
-		std::lock_guard<std::mutex> lock(mutex_);
-		if (state_ == STATE::INACTIVE) {
-			return false;
-		}
-	}
-
 	DWORD flags = 0;
 	DWORD recvbytes = 0;
 	WSABUF buf[2] = {};
+
+	std::unique_lock<std::mutex> lock(mutex_);
+	if (!this->IsActive()) {
+		return false;
+	}
+	this->IncrementRefCount();
+	lock.unlock();
+
+	// 락 내부에서 세션의 활성 여부 체크 및 릴리즈 방지로 락없이 진행 가능
 	buf[0].buf = recvQ_.GetRearBufferPtr();
 	buf[0].len = recvQ_.DirectEnqueueSize();
 	buf[1].buf = recvQ_.GetBufferPtr();
 	buf[1].len = recvQ_.GetFreeSize() - buf[0].len;
-	this->IncrementRefCount();
 	int retRecv = WSARecv(socket_, buf, 2, &recvbytes, &flags, (WSAOVERLAPPED*)&overlappedRecv_, NULL);
 	if (retRecv == SOCKET_ERROR) {
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING) {
 			SLog(ERROR_LEVEL, L"recv(%d)",error);
-			this->DecrementRefCountAndReleaseLock();
+			this->DecrementRefCountAndRelease();
 			return false;
 		}
 	}
@@ -84,15 +83,14 @@ bool Session::PostRecv()
 
 bool Session::PostSend()
 {
-	std::lock_guard<std::mutex> lock(mutex_);
-
+	std::unique_lock<std::mutex> lock(mutex_);
 	if (state_ == STATE::INACTIVE) {
 		return false;
 	}
-
 	if (isSending_) {
 		return false;
 	}
+	this->IncrementRefCount();
 
 	isSending_ = true;
 
@@ -102,8 +100,8 @@ bool Session::PostSend()
 	buf[0].len = sendQ_.DirectDequeueSize();
 	buf[1].buf = sendQ_.GetBufferPtr();
 	buf[1].len = sendQ_.GetUseSize() - buf[0].len;
+	lock.unlock();
 
-	this->IncrementRefCount();
 	int retSend = WSASend(socket_, buf, 2, &sendbytes, 0, (WSAOVERLAPPED*)&overlappedSend_, NULL);
 	if (retSend == SOCKET_ERROR) {
 		int error = WSAGetLastError();
@@ -126,7 +124,7 @@ void Session::OnRecv(DWORD transferred)
 	int recved = recvQ_.MoveRear(transferred);
 	if (recved == 0) {
 		SLog(ERROR_LEVEL, L"recvQ MoveRear failed");
-		this->DecrementRefCountAndReleaseLock();
+		this->DecrementRefCountAndRelease();
 		return;
 	}
 
@@ -151,19 +149,27 @@ void Session::OnRecv(DWORD transferred)
 		}
 		else break;
 	}
-	this->DecrementRefCountLock();
-	if (!this->IsActive())
+
+	bool released = this->DecrementRefCount();
+	if (released) {
 		return;
-	this->PostRecv();
+	}
+	else {
+		this->PostRecv();
+	}
 }
 
 void Session::OnSend(DWORD transferred)
 {
 	SLog(DEBUG_LEVEL, L"sended: %d bytes", transferred);
-	std::unique_lock<std::mutex> lock(mutex_);
-	this->DecrementRefCount();
-	if (!this->IsActive())
+	bool released = this->DecrementRefCount();
+	if (released) {
 		return;
+	}
+	std::unique_lock<std::mutex> lock(mutex_);
+	if (!this->IsActive()) {
+		return;
+	}
 	sendQ_.MoveFront(transferred);
 	isSending_ = false;
 	if (sendQ_.GetUseSize() > 0) {
@@ -200,46 +206,31 @@ void Session::IncrementRefCount()
 	++refCount;
 }
 
-
-void Session::IncrementRefCountLock()
+bool Session::DecrementRefCount()
 {
-	std::lock_guard<std::mutex> lock(mutex_);
-	this->IncrementRefCount();
-}
-
-void Session::DecrementRefCount()
-{
-	auto count = --refCount;
-	if (disconnectRequested_ && count < 1) {
-		SessionManager::Instance().DisconnectSession(id_);
-	}
-}
-
-void Session::DecrementRefCountLock()
-{
-	std::lock_guard<std::mutex> lock(mutex_);
-	this->DecrementRefCount();
+   std::unique_lock<std::mutex> lock(mutex_);
+   auto count = --refCount;
+   if (disconnectRequested_ && count < 1) {
+       SessionManager::Instance().DisconnectSession(id_, std::move(lock));
+       return true;
+   }
+   return false;
 }
 
 void Session::DecrementRefCountAndRelease()
 {
+	std::unique_lock<std::mutex> lock(mutex_);
 	auto count = --refCount;
 	if (count < 1) {
-		SessionManager::Instance().DisconnectSession(id_);
+		SessionManager::Instance().DisconnectSession(id_,std::move(lock));
 	}
 	else {
 		this->RequestDisconnect();
 	}
 }
 
-void Session::DecrementRefCountAndReleaseLock()
-{
-	std::lock_guard<std::mutex> lock(mutex_);
-	this->DecrementRefCountAndRelease();
-}
-
 bool Session::CheckHeader(PktHeader& header)
 {
-	// DOS
+	// TODO
 	return true;
 }

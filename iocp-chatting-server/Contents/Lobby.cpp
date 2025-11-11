@@ -4,17 +4,19 @@
 #include "NetLib/SessionManager.h"
 #include "Util/SystemLogger.h"
 #include "Packet/PacketMaker_Auto.h"
+#include "define.h"
 
 using enum SystemLogger::LOG_LEVEL;
 
-void Lobby::OnAccept(uint32_t sessionId)
+uint32_t Lobby::OnConnect(uint32_t sessionId)
 {
-    this->CreateUser(sessionId);
+    return this->CreateUser(sessionId);
 }
 
-void Lobby::OnRelease(uint32_t sessionId)
+void Lobby::OnRelease(uint32_t sessionId, SessionInfo& sessionInfo)
 {
-    this->DeleteUser(sessionId);
+    auto userId = sessionInfo.userId;
+    this->DeleteUser(userId);
 }
 
 void Lobby::ChatUnicast(uint32_t userId, int64_t msg)
@@ -37,24 +39,17 @@ void Lobby::ChatUnicast(uint32_t userId, int64_t msg)
 	session->SendPacket(*packet);
 }
 
-void Lobby::CreateUser(uint32_t sessionId)
+uint32_t Lobby::CreateUser(uint32_t sessionId)
 {
     SLog(DEBUG_LEVEL, L"Create User");
-    auto session = SessionManager::Instance().GetSessionPointer(sessionId);
-
     std::lock_guard<std::mutex> lock(mutex_);
-    session->SetUserIdLock(userIdCount_);
     users_.emplace(userIdCount_, std::make_shared<User>(userIdCount_, sessionId));
-    userIdCount_++;
+    return userIdCount_++;
 }
 
-void Lobby::DeleteUser(uint32_t sessionId)
+void Lobby::DeleteUser(uint32_t userId)
 {
     SLog(DEBUG_LEVEL, L"Delete User");
-    auto session = SessionManager::Instance().GetSessionPointer(sessionId);
-    uint32_t userId = session->GetUserIdLock();
-
     std::lock_guard<std::mutex> lock(mutex_);
-
     users_.erase(userId);
 }

@@ -7,11 +7,11 @@
 
 int main()
 {
-	SystemLogger::Instance().SYSLOG_LEVEL(SystemLogger::LOG_LEVEL::ERROR_LEVEL);
+	SystemLogger::Instance().SYSLOG_LEVEL(SystemLogger::LOG_LEVEL::DEBUG_LEVEL);
 
 	NetworkEvents* lobby = &Lobby::Instance();
 
-	std::shared_ptr<Server> server = std::make_shared<NetServer>(lobby, 4,8);
+	std::shared_ptr<Server> server = std::make_shared<NetServer>(lobby, 1,1);
 
 	server.get()->Start();
 

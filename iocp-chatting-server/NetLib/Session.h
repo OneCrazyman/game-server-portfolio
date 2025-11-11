@@ -3,7 +3,7 @@
 #include "Util/CRingBuffer.h"
 #include "define.h"
 
-struct SessionInfo;
+struct SessionConfig;
 class CPacket;
 
 class Session
@@ -17,8 +17,8 @@ public:
 
 	enum class STATE
 	{
-		ACTIVE,
 		INACTIVE,
+		ACTIVE,
 	};
 
 	struct MyOverlapped
@@ -29,7 +29,7 @@ public:
 
 	Session(uint32_t maxRecvQ, uint32_t maxSendQ) : recvQ_(maxRecvQ), sendQ_(maxSendQ) {}
 
-	void Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, SessionInfo& sessionInfo);
+	void Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, SessionConfig& sessionInfo);
 
 	void ClearLock();
 	void Clear();
@@ -42,9 +42,11 @@ public:
 
 	void SendPacket(CPacket&);
 
-	bool IsActive() const { return (state_ == STATE::ACTIVE ? true : false); }
+	bool IsActive() const { 
+		return (state_ == STATE::ACTIVE ? true : false);
+	}
 	bool IsActiveLock() { std::lock_guard<std::mutex> lock(mutex_); return (state_ == STATE::ACTIVE ? true : false); }
-	uint32_t GetUserId() const { return userId_; }
+	uint32_t UserId() const { return userId_; }
 	uint32_t GetUserIdLock() { std::lock_guard<std::mutex> lock(mutex_); return userId_; }
 	void SetUserId(uint32_t userId) { userId_ = userId; }
 	void SetUserIdLock(uint32_t userId) { std::lock_guard<std::mutex> lock(mutex_); userId_ = userId; }
@@ -52,25 +54,26 @@ public:
 	const wchar_t* Ip() { return ip_.c_str(); }
 	uint16_t Port() const { return port_; }
 
-
 	void RequestDisconnect() { disconnectRequested_ = true; }
 	void IncrementRefCount();
-	void IncrementRefCountLock();
-	void DecrementRefCount();
-	void DecrementRefCountLock();
+	bool DecrementRefCount();
 	void DecrementRefCountAndRelease();
-	void DecrementRefCountAndReleaseLock();
+
+	void CloseSocket() const { closesocket(socket_); }
+
+	std::mutex& Mutex() { return mutex_; }
 protected:
 	void OnMessage(uint16_t type, CPacket* packet) const;
 
 	bool CheckHeader(PktHeader&);
-	void CloseSocket() const { closesocket(socket_); }
 
 protected:
 	uint32_t id_ = 0;
 	uint32_t gen_ = 0;
+	//std::atomic<STATE> state_ = STATE::INACTIVE;
+	//std::atomic<long> refCount = 0;
 	STATE state_ = STATE::INACTIVE;
-
+	long refCount = 0;
 	SOCKET socket_ = NULL;
 	std::wstring ip_;
 	uint16_t port_ = 0;
@@ -82,7 +85,6 @@ protected:
 	MyOverlapped overlappedSend_ = {};
 	
 	uint32_t genCount_ = 0;
-	long refCount = 0;
 	bool disconnectRequested_ = false;
 	
 	bool isSending_ = false;
