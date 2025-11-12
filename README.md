@@ -1,16 +1,21 @@
 # game-server-portfolio
 
-게임 서버 프로젝트 포트폴리오입니다.
+게임 서버 관련 프로젝트를 정리하였습니다.
+
+<br>
 
 ## [iocp-chatting-server](./iocp-chatting-server/)  
 
 > IOCP 기반 멀티스레드 채팅 서버  
 > 비동기 I/O 모델을 활용한 효율적인 세션 관리 및 패킷 처리 구조 구현
 
+<br>
  
 ## [packet-code-generator](./packet-code-generator/)  
 > Excel로 패킷 정의를 관리하고 Stub / Proxy 코드를 자동 생성하는 유틸  
 > 서버·클라이언트 간 패킷 구조 일관성을 유지하고 개발 효율성을 향상하는것이 목표
+
+<br>
 
 ---
 ### 🧰 Skills
