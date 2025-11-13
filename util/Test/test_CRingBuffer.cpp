@@ -73,3 +73,11 @@ TEST(RingBufferTest, EnqueueDequeueFullBuffer) {
     delete[] src;
     delete[] dst;
 }
+
+// 
+TEST(RingBufferTest, FreeSizeBugTest)
+{
+    const int size = 1000;
+    CRingBuffer rbuf(size);
+    EXPECT_EQ(rbuf.DirectEnqueueSize(), rbuf.GetFreeSize());
+}

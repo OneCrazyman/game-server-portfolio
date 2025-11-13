@@ -121,7 +121,7 @@ int CRingBuffer::DirectEnqueueSize(void) const
 {
 	int result;
 	if (rear_ >= front_) {
-		result = size_ - rear_;
+		result = (size_ - 1) - rear_;
 	}
 	else {
 		result = front_ - rear_ - 1;

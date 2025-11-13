@@ -123,6 +123,7 @@ int CRingBuffer::DirectEnqueueSize(void) const
 	int result;
 	if (rear_ >= front_) {
 		result = size_ - rear_;
+		result = (size_ - 1) - rear_;
 	}
 	else {
 		result = front_ - rear_ - 1;
@@ -161,7 +162,6 @@ int CRingBuffer::DirectDequeueSizeLock(void)
 
 int CRingBuffer::MoveRear(int iSize)
 {
-	// use_size_,free_size_ 관리를 위한 범위처리
 	if (iSize > 0 && iSize > GetFreeSize()) return 0;
 	if (iSize < 0 && (-iSize) > GetUseSize()) return 0;
 	rear_ = (rear_ + iSize) % size_;
@@ -170,7 +170,6 @@ int CRingBuffer::MoveRear(int iSize)
 
 int CRingBuffer::MoveFront(int iSize)
 {
-	// use_size_,free_size_ 관리를 위한 범위처리
 	if (iSize > 0 && iSize > GetUseSize()) return 0;
 	if (iSize < 0 && (-iSize) > GetFreeSize()) return 0;
 	front_ = (front_ + iSize) % size_;

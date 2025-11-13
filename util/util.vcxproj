@@ -105,10 +105,6 @@
     <ClCompile Include="Test\test.cpp" />
     <ClCompile Include="Test\test_CFileParser.cpp" />
     <ClCompile Include="Test\test_Clock.cpp" />
-    <ClCompile Include="Test\test_CLockFreeNodeStack.cpp" />
-    <ClCompile Include="Test\test_CLockFreeObjectPool.cpp" />
-    <ClCompile Include="Test\test_CLockFreeQueue.cpp" />
-    <ClCompile Include="Test\test_CLockFreeStack.cpp" />
     <ClCompile Include="Test\test_CPacket.cpp" />
     <ClCompile Include="Test\test_CRingBuffer.cpp" />
     <ClCompile Include="Test\test_SystemLogger.cpp" />
@@ -119,9 +115,6 @@
   <ItemGroup>
     <ClInclude Include="Util\CFileParser.h" />
     <ClInclude Include="Util\Clock.h" />
-    <ClInclude Include="Util\CLockFreeObjectPool.h" />
-    <ClInclude Include="Util\CLockFreeQueue.h" />
-    <ClInclude Include="Util\CLockFreeStack.h" />
     <ClInclude Include="Util\CPacket.h" />
     <ClInclude Include="Util\CRingBuffer.h" />
     <ClInclude Include="Util\ObjectPool.h" />
