@@ -31,7 +31,7 @@ int CRingBuffer::GetUseSize(void) const
 int CRingBuffer::GetFreeSize(void) const
 {
 	if (rear_ >= front_)
-		return (size_ - (rear_ - front_));
+		return (size_ - (rear_ - front_) - 1);
 	else
 		return (front_ - rear_ - 1);
 }
