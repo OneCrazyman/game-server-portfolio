@@ -9,7 +9,7 @@ void SystemLogger::Write(LOG_LEVEL logLevel, const wchar_t* func, const wchar_t*
         wchar_t buf[1024];
         _vsnwprintf_s(buf, _countof(buf), _TRUNCATE, fmt, args);
         va_end(args);
-        wprintf_s(L"[%s] %s:\t\t\t %s\n", LevelToChar(logLevel), func, buf);
+        wprintf_s(L"[%ls] %-35ls: %ls\n", LevelToChar(logLevel), func, buf);
         // TODO FILE LOG
     }
 }
