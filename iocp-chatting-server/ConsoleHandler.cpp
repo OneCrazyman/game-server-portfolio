@@ -9,15 +9,15 @@ void ConsoleHandler::Run()
 	std::wstring command;
 	while (1) {
 		std::wcin >> command;
-		if (command == L"stop") {
+		if (command == L"stop" || command == L"s") {
 			server_.get()->Stop();
 			SLog(SYSTEM_LEVEL, L"## Server Stopped");
 			break;
 		}
-		if (command == L"debug" || command == L"d") {
+		else if (command == L"debug" || command == L"d") {
 			SystemLogger::Instance().SYSLOG_LEVEL(DEBUG_LEVEL);
 		}
-		if (command == L"error" || command == L"e") {
+		else if (command == L"error" || command == L"e") {
 			SystemLogger::Instance().SYSLOG_LEVEL(ERROR_LEVEL);
 		}
 		else {
