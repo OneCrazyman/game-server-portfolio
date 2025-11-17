@@ -138,8 +138,8 @@ void LanServer::AcceptThread()
 				continue;
 			case SOCK_ERR_INTR:
 			case SOCK_ERR_NOTSOCK:
-				// Shutdown AcceptThread
-				break;
+				SLog(SYSTEM_LEVEL, L"Shutdown AcceptThread ## id: %d", std::this_thread::get_id());
+				return;
 			default:
 				SLog(ERROR_LEVEL, L"accept(%d)",error);
 				continue;
