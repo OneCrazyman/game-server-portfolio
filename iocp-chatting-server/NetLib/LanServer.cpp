@@ -148,7 +148,6 @@ void LanServer::AcceptThread()
 		OnAccept(clientSocket,clientaddr);
 	}
 
-	SLog(SYSTEM_LEVEL, L"Shutdown AcceptThread ## id: %d", std::this_thread::get_id());
 	return;
 }
 
