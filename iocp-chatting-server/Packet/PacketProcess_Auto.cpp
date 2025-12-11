@@ -22,6 +22,5 @@ void PacketProcess_Auto::DispatchEcho(uint32_t sessionId, CPacket& packet)
 {
 	int64_t msg;
 	packet >> msg;
-    delete &packet; // FIX
 	handler.OnEcho(sessionId, msg);
 }

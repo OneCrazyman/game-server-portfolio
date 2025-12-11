@@ -34,9 +34,9 @@ void Lobby::ChatUnicast(uint32_t userId, int64_t msg)
         return;
 	}
 
-    CPacket* packet = new CPacket; // FIX
-    mp_Echo(*packet, msg);
-	session->SendPacket(*packet);
+    CPacket packet;
+    mp_Echo(packet, msg);
+	session->SendPacket(packet);
 }
 
 uint32_t Lobby::CreateUser(uint32_t sessionId)

@@ -140,9 +140,12 @@ void Session::OnRecv(DWORD transferred)
 			if (recvQ_.GetUseSize() >= sizeof(PktHeader) + header.Len) {
 				recvQ_.MoveFront(sizeof(PktHeader));
 
-				CPacket* pkt = new CPacket(); // FIX
-				recvQ_.Dequeue(pkt->GetBufferPtr(), header.Len);
-				pkt->MoveWritePos(header.Len);
+				CPacket pkt;
+				auto retDeq = recvQ_.Dequeue(pkt.GetBufferPtr(), header.Len);
+				if (retDeq != header.Len) {
+					SLog(ERROR_LEVEL, L"header len");
+				}
+				pkt.MoveWritePos(header.Len);
 				OnMessage(0, pkt);
 			}
 			else break;
@@ -178,9 +181,9 @@ void Session::OnSend(DWORD transferred)
 	}
 }
 
-void Session::OnMessage(uint16_t type, CPacket* packet) const
+void Session::OnMessage(uint16_t type, CPacket& packet) const
 {
-	PacketProcess_Auto::Instance().Process(type, id_, *packet);
+	PacketProcess_Auto::Instance().Process(type, id_, packet);
 }
 
 void Session::SendPacket(CPacket& packet)
@@ -196,7 +199,6 @@ void Session::SendPacket(CPacket& packet)
 			this->RequestDisconnect();
 			return;
 		}
-		delete& packet; // FIX
 	}
 	this->PostSend();
 }

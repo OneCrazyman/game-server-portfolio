@@ -63,7 +63,7 @@ public:
 
 	std::mutex& Mutex() { return mutex_; }
 protected:
-	void OnMessage(uint16_t type, CPacket* packet) const;
+	void OnMessage(uint16_t type, CPacket& packet) const;
 
 	bool CheckHeader(PktHeader&);
 
