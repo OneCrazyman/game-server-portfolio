@@ -5,8 +5,8 @@ CRingBuffer::CRingBuffer() : CRingBuffer(BUFFER_SIZE) {};
 
 CRingBuffer::CRingBuffer(int iBufferSize)
 {
-	buffer_ = new char[iBufferSize + 1]; // 사용자에게 iBufferSize만큼 최대 free_size_를 제공하기 위해 +1
-	size_ = iBufferSize + 1;
+	size_ = iBufferSize + 1; // 사용자에게 iBufferSize만큼 최대 free_size_를 제공하기 위해 +1
+	buffer_ = new char[size_]; 
 	InitializeSRWLock(&srwlock_);
 }
 
