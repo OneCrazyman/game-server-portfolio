@@ -69,6 +69,12 @@
     <ClInclude Include="Util\SystemLogger.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="Util\Util.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\Profiler.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
