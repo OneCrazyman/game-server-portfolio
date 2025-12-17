@@ -81,3 +81,22 @@ TEST(RingBufferTest, FreeSizeBugTest)
     CRingBuffer rbuf(size);
     EXPECT_EQ(rbuf.DirectEnqueueSize(), rbuf.GetFreeSize());
 }
+
+TEST(RingBufferTest, DirectEnqueueSize_IncludesBufferEnd_WhenFrontIsNonZero)
+{
+    const int size = 10;
+    CRingBuffer rbuf(size);
+    EXPECT_EQ(rbuf.GetBufferSize(), size);
+
+    // rear_ = 5
+    char in[5] = {};
+    int rear = rbuf.Enqueue(in, 5);
+
+    // front_ = 2
+    char out[2];
+    int front = rbuf.Dequeue(out, 2);
+
+    EXPECT_EQ(rbuf.GetUseSize(), 3);
+    int frontFreeSize = front - 1; // queue full½Ã ÇÑÄ­ ºñ¿ò
+    EXPECT_EQ(rbuf.DirectEnqueueSize() + frontFreeSize, rbuf.GetFreeSize());
+}

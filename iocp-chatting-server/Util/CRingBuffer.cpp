@@ -5,8 +5,8 @@ CRingBuffer::CRingBuffer() : CRingBuffer(BUFFER_SIZE) {};
 
 CRingBuffer::CRingBuffer(int iBufferSize)
 {
-	buffer_ = new char[iBufferSize + 1]; // 사용자에게 iBufferSize만큼 최대 free_size_를 제공하기 위해 +1
-	size_ = iBufferSize + 1;
+	size_ = iBufferSize + 1; // 사용자에게 iBufferSize만큼 최대 free_size_를 제공하기 위해 +1
+	buffer_ = new char[size_]; 
 	InitializeSRWLock(&srwlock_);
 }
 
@@ -122,13 +122,14 @@ int CRingBuffer::DirectEnqueueSize(void) const
 {
 	int result;
 	if (rear_ >= front_) {
-		result = size_ - rear_;
-		result = (size_ - 1) - rear_;
+		if (front_ == 0) // full일때 한칸 비워있어야 한다. 
+			return (size_ - rear_ - 1);
+		else
+			return (size_ - rear_);
 	}
 	else {
-		result = front_ - rear_ - 1;
+		return (front_ - rear_ - 1);
 	}
-	return result;
 }
 
 int CRingBuffer::DirectEnqueueSizeLock(void)
