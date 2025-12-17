@@ -1,166 +1,260 @@
+// thread safety profiler used TLS
+
 #pragma once
 #include <iostream>
-#include <windows.h>
+#include <chrono>
+#include <vector>
+#include <mutex>
+
+#include "Util/SystemLogger.h"
+#include "Util/Util.h"
+
+using enum SystemLogger::LOG_LEVEL;
+
+#define CONCAT_IMPL(a, b) a ## b
+#define CONCAT(a, b) CONCAT_IMPL(a, b)
+
+#ifdef ENABLED_PROFILER
+#define CREATE_PROFILE \
+    Profiler CONCAT(profiler, __LINE__)(__func__)
+
+#define CREATE_PROFILE_TAG(tag) \
+    Profiler CONCAT(profiler, __LINE__)(tag)
+#else
+#define CREATE_PROFILE 
+#define CREATE_PROFILE_TAG(tag)
+#endif
 
 #define PROFILE_MAX 128
 
 struct PROFILE_DATA
 {
-	long			Flag;				// 프로파일의 사용 여부. (배열시에만)
-	CHAR			Name[64];			// 프로파일 샘플 이름.
+	bool Flag;						// 프로파일의 사용 여부. (배열시에만)
+	char Name[64];					// 프로파일 샘플 이름.
 
-	LARGE_INTEGER	StartTime;			// 프로파일 샘플 실행 시간.
+	__int64	TotalTime;				// 전체 사용시간 카운터 Time.	(출력시 호출회수로 나누어 평균 구함)
+	__int64	Min[2];					// 최소 사용시간 카운터 Time.	(나노초단위로 계산하여 저장 / [0] 가장최소 [1] 다음최소)
+	__int64	Max[2];					// 최대 사용시간 카운터 Time.	(나노초단위로 계산하여 저장 / [0] 가장최대 [1] 다음최대)
 
-	__int64			TotalTime;			// 전체 사용시간 카운터 Time.	(출력시 호출회수로 나누어 평균 구함)
-	__int64			Min[2];				// 최소 사용시간 카운터 Time.	(초단위로 계산하여 저장 / [0] 가장최소 [1] 다음 최소 [2])
-	__int64			Max[2];				// 최대 사용시간 카운터 Time.	(초단위로 계산하여 저장 / [0] 가장최대 [1] 다음 최대 [2])
+	__int64	Call;					// 누적 호출 횟수.
+};
 
-	__int64			Call;				// 누적 호출 횟수.
+struct PROFILE_THREAD_CONTEXT
+{
+	std::unique_ptr<PROFILE_DATA[]> ProfileData;
+	std::string ThreadId;
+	int ProfileCount;
 };
 
 class Profiler
 {
+	using Clock = std::chrono::steady_clock; // wraps QueryPerformanceCounter
+	using TimePoint = Clock::time_point;
+
 public:
-	Profiler(const char* function_name);
+	Profiler(const char* tag);
 	~Profiler();
 
-	static void DataOutText(const char* szFileName);
-	static void Initialize();
+	static bool DataOutText(const char* szFileName);
+
 private:
+	void CheckInit();
+	void Initialize();
 	void Begin(const char* tag);
 	void End();						
 	void Update(int count);
-public:
-	inline static int _profile_count = 0;
-	inline static LARGE_INTEGER _freq_time;
-	inline static PROFILE_DATA profile_data[PROFILE_MAX];
-private:
-	LARGE_INTEGER _start_time;
-	LARGE_INTEGER _end_time;
 
-	const char* _tag;
+private:
+	inline static std::mutex mtx;
+	inline static std::vector<std::unique_ptr<PROFILE_THREAD_CONTEXT>> allProfiles;
+	inline static thread_local PROFILE_THREAD_CONTEXT* tlsContext = nullptr;
+	inline static thread_local bool isInit = false;
+
+private:
+	TimePoint startTime;
+	TimePoint endTime;
+
+	const char* tag_;
 };
 
-inline Profiler::Profiler(const char* function_name)
+inline Profiler::Profiler(const char* tag) : tag_(tag)
 {
-	Begin(function_name);
-	_tag = function_name;
+	this->CheckInit();
+	this->Begin(tag);
 }
 
 inline Profiler::~Profiler()
 {
-	End();
+	this->End();
 }
 
-inline void Profiler::DataOutText(const char* szFileName)
+inline void Profiler::Initialize()
+{
+	for (size_t i = 0; i < PROFILE_MAX; i++) {
+		tlsContext->ProfileData[i].Call = 0;
+		tlsContext->ProfileData[i].Flag = false;
+		tlsContext->ProfileData[i].Max[0] = 0;
+		tlsContext->ProfileData[i].Max[1] = 0;
+		tlsContext->ProfileData[i].Min[0] = LLONG_MAX;
+		tlsContext->ProfileData[i].Min[1] = LLONG_MAX;
+		tlsContext->ProfileData[i].Name[0] = '\0';
+		tlsContext->ProfileData[i].TotalTime = 0;
+	}
+}
+
+inline void Profiler::CheckInit()
+{
+	if (isInit) return;
+
+	isInit = true;
+	
+	auto ctx = std::make_unique<PROFILE_THREAD_CONTEXT>();
+	ctx->ThreadId = util::GetThreadId(std::this_thread::get_id());
+	ctx->ProfileData = std::make_unique<PROFILE_DATA[]>(PROFILE_MAX);
+	ctx->ProfileCount = 0;
+
+	tlsContext = ctx.get();
+	this->Initialize();
+
+	std::lock_guard<std::mutex> lock(mtx);
+	allProfiles.push_back(std::move(ctx));
+}
+
+inline static double GetAvgUs(PROFILE_DATA& profileData)
+{
+	const double NS_TO_US = 1.0 / 1000.0;
+	const int MIN_MAX_SUM = 4; 
+	if (profileData.Call <= MIN_MAX_SUM) {
+		if (profileData.Call == 0) return 0.0;
+		return (profileData.TotalTime) * NS_TO_US / static_cast<double>(profileData.Call);
+	}
+	else {
+		__int64 sumMinMaxNs =
+			// 양 극단값 2개씩(총4) 제외 
+			profileData.Min[0] +
+			profileData.Min[1] +
+			profileData.Max[0] +
+			profileData.Max[1];
+		return (profileData.TotalTime - sumMinMaxNs) * NS_TO_US / static_cast<double>(profileData.Call - MIN_MAX_SUM);
+	}
+}
+
+inline static void WriteProfileData(FILE* fp, PROFILE_THREAD_CONTEXT* ctx)
+{
+	const double NS_TO_US = 1.0 / 1000.0;
+
+	PROFILE_DATA* profileData = ctx->ProfileData.get();
+	const char* threadId = ctx->ThreadId.c_str();
+	int count = ctx->ProfileCount;
+
+	fprintf_s(fp, "Thread \t| Name \t\t| Average \t| Min \t\t| Max \t\t| Call \t|\n");
+	for (int i = 0; i < count; i++) {
+		double avgUs = GetAvgUs(profileData[i]);
+		fprintf_s(fp, "%s \t| %s \t| %.4lf㎲ \t| %.4lf㎲ \t| %.4lf㎲ \t| %lld \t|\n",
+			threadId,
+			profileData[i].Name,
+			avgUs,
+			profileData[i].Min[0] * NS_TO_US,
+			profileData[i].Max[0] * NS_TO_US,
+			profileData[i].Call
+		);
+	}
+
+	char textLine[112];
+	memset(textLine, '-', _countof(textLine));
+	textLine[_countof(textLine) - 1] = '\0';
+	fprintf_s(fp, "%s\n", textLine);
+}
+
+inline bool Profiler::DataOutText(const char* szFileName)
 {
 	FILE* fp;
 	fopen_s(&fp, szFileName, "w");
 	if (fp == nullptr)
 	{
-		printf("파일을 열 수 없습니다: %s\n", szFileName);
-		return;
+		SLog(ERROR_LEVEL, L"don't read file: %s\n", szFileName);
+		return false;
 	}
-
-	char text_line[100];
-	memset(text_line, '-', _countof(text_line));
-	text_line[sizeof(text_line) - 1] = '\0';
-	fprintf_s(fp, "%s\n", text_line);
-	fprintf_s(fp, " Name \t| Average \t| Min \t\t| Max \t\t| Call \t|\n");
-	fprintf_s(fp, "%s\n", text_line);
-	for (int i = 0; i < _profile_count; i++)
 	{
-		__int64 sum_min_max =
-			profile_data[i].Min[0] +
-			profile_data[i].Min[1] +
-			profile_data[i].Max[0] +
-			profile_data[i].Max[1];
-		double avg = (profile_data[i].TotalTime - sum_min_max) * 1'000'000.0 / (_freq_time.QuadPart) / (profile_data[i].Call - 4);
-		fprintf_s(fp, " %s \t| %.4lf㎲ \t| %.4lf㎲ \t| %.4lf㎲ \t| %d \t|\n",
-			profile_data[i].Name,
-			avg,
-			profile_data[i].Min[0] * 1'000'000.0 / _freq_time.QuadPart,
-			profile_data[i].Max[0] * 1'000'000.0 / _freq_time.QuadPart,
-			profile_data[i].Call
-		);
+		std::lock_guard<std::mutex> lock(mtx);
+		for (int i = 0; i < allProfiles.size(); i++) {
+			WriteProfileData(fp, allProfiles[i].get());
+		}
 	}
-	fprintf_s(fp, "%s\n", text_line);
-	fclose(fp); // fixed, 32에러 발생했었음
+	fclose(fp);
+
+	return true;
 }
 
-// 초기화
-inline void Profiler::Initialize()
-{
-	QueryPerformanceFrequency(&Profiler::_freq_time);
-	for (size_t i = 0; i < PROFILE_MAX; i++)
-	{
-		profile_data[i].Max[0] = 0;
-		profile_data[i].Max[1] = 0;
-		profile_data[i].Min[0] = LLONG_MAX;
-		profile_data[i].Min[1] = LLONG_MAX;
-	}
-}
 
 inline void Profiler::Begin(const char* tag)
 {
-	QueryPerformanceCounter(&_start_time);
+	startTime = Clock::now();
 }
 
 inline void Profiler::End()
 {
-	QueryPerformanceCounter(&_end_time);
-	//
-	bool is_find = false;
-	for (size_t i = 0; i < _profile_count; i++)
+	endTime = Clock::now();
+	
+	bool isFind = false;
+	int& count = tlsContext->ProfileCount;
+	const auto pfData = tlsContext->ProfileData.get();
+
+	for (int i = 0; i < count; i++)
 	{
-		// 구조체 배열에서 해당 태그를 찾음
-		if (strcmp(profile_data[i].Name, _tag) == 0)
+		if (strcmp(pfData[i].Name, tag_) == 0)
 		{
-			// 해당 태그의 구조체 배열에 데이터를 삽입
-			Update(i);
-			is_find = true;
+			this->Update(i);
+			isFind = true;
 		}
 	}
 
-	// 최초 생성시
-	if (is_find == false)
+	if (!isFind)
 	{
-		Update(_profile_count);
-		_profile_count++;
+		this->Update(count);
+		count++;
 	}
-
-	LONGLONG time = _end_time.QuadPart - _start_time.QuadPart;
-	wprintf(L"time: %.4lf\n", time * 1'000'000.0 / _freq_time.QuadPart);
 }
 
-// Profiler 구조체 배열에 데이터 갱신 및 생성
+// Profiler 구조체 배열에 데이터 업데이트 및 생성
 inline void Profiler::Update(int count)
 {
 	if (count >= PROFILE_MAX)
 	{
-		// do
+		SLog(ERROR_LEVEL, L"Profile count overflow # count: %d", count);
 		return;
 	}
-	__int64 time = _end_time.QuadPart - _start_time.QuadPart;
-	strcpy_s(profile_data[count].Name, strlen(_tag) + 1, _tag);
-	profile_data[count].TotalTime += time;
+
+	auto pfData = tlsContext->ProfileData.get();
+	if (!pfData[count].Flag)
+		strcpy_s(pfData[count].Name, strlen(tag_) + 1, tag_);
+
+	auto elapsedNsTime = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
+
+	pfData[count].Flag = true;
+	pfData[count].TotalTime += elapsedNsTime;
+	pfData[count].Call++;
+
 	// min 
-	if (time < profile_data[count].Min[0])
-	{
-		profile_data[count].Min[0] = time;
+	auto& mn0 = pfData[count].Min[0];
+	auto& mn1 = pfData[count].Min[1];
+	if (elapsedNsTime < mn0) {
+		mn1 = mn0;
+		mn0 = elapsedNsTime;
 	}
-	else if (time < profile_data[count].Min[1])
-	{
-		profile_data[count].Min[1] = time;
+	else if (elapsedNsTime < mn1) {
+		mn1 = elapsedNsTime;
 	}
+
 	// max
-	if (time > profile_data[count].Max[0])
-	{
-		profile_data[count].Max[0] = time;
+	auto& mx0 = pfData[count].Max[0];
+	auto& mx1 = pfData[count].Max[1];
+	if (elapsedNsTime > mx0) {
+		mx1 = mx0;
+		mx0 = elapsedNsTime;
 	}
-	else if (time > profile_data[count].Max[1])
-	{
-		profile_data[count].Max[1] = time;
+	else if (elapsedNsTime > mx1) {
+		mx1 = elapsedNsTime;
 	}
-	profile_data[count].Call++;
 }
+

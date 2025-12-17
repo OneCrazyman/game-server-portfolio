@@ -99,10 +99,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Test\test_ObjectPool.cpp" />
+    <ClCompile Include="Test\test_Profiler.cpp" />
     <ClCompile Include="Util\CFileParser.cpp" />
     <ClCompile Include="Util\CRingBuffer.cpp" />
     <ClCompile Include="Util\SystemLogger.cpp" />
-    <ClCompile Include="Test\test.cpp" />
     <ClCompile Include="Test\test_CFileParser.cpp" />
     <ClCompile Include="Test\test_Clock.cpp" />
     <ClCompile Include="Test\test_CPacket.cpp" />
@@ -118,10 +118,10 @@
     <ClInclude Include="Util\CPacket.h" />
     <ClInclude Include="Util\CRingBuffer.h" />
     <ClInclude Include="Util\ObjectPool.h" />
-    <ClInclude Include="Util\Profile.h" />
-    <ClInclude Include="Util\ProfileDefine.h" />
+    <ClInclude Include="Util\Profiler.h" />
     <ClInclude Include="Util\Singleton.h" />
     <ClInclude Include="Util\SystemLogger.h" />
+    <ClInclude Include="Util\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
