@@ -1,28 +1,35 @@
 #include "stdafx.h"
 #include "ConsoleHandler.h"
 #include "Util/SystemLogger.h"
+#include "Util/Profiler.h"
 
 using enum SystemLogger::LOG_LEVEL;
 
 void ConsoleHandler::Run()
 {
-	std::wstring command;
 	while (1) {
-		std::wcin >> command;
-		if (command == L"stop" || command == L"s") {
-			server_.get()->Stop();
-			SLog(SYSTEM_LEVEL, L"## Server Stopped");
-			break;
-		}
-		else if (command == L"debug" || command == L"d") {
-			SystemLogger::Instance().SYSLOG_LEVEL(DEBUG_LEVEL);
-		}
-		else if (command == L"error" || command == L"e") {
-			SystemLogger::Instance().SYSLOG_LEVEL(ERROR_LEVEL);
-		}
-		else {
-			SLog(SYSTEM_LEVEL, L"UNKNOWN COMMAND");
-			continue;
+		switch (_getch()) {
+			case 's': {
+				server_.get()->Stop();
+				SLog(SYSTEM_LEVEL, L"## Server Stopped");
+				continue;
+			}
+			case 'd': {
+				SystemLogger::Instance().SYSLOG_LEVEL(DEBUG_LEVEL);
+				continue;
+			}
+			case 'e': {
+				SystemLogger::Instance().SYSLOG_LEVEL(ERROR_LEVEL);
+				continue;
+			}
+			case 'p': {
+				Profiler::DataOutText("profile.txt");
+				continue;
+			}
+			default: {
+				SLog(SYSTEM_LEVEL, L"UNKNOWN COMMAND");
+				continue;
+			}
 		}
 	}
 	SLog(SYSTEM_LEVEL, L"Console Shutdown..");

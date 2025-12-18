@@ -7,6 +7,9 @@
 #include "SessionManager.h"
 #include "Packet/PacketProcess_Auto.h"
 
+#define ENABLED_PROFILER
+#include "Util/Profiler.h"
+
 using enum SystemLogger::LOG_LEVEL;
 
 void Session::Init(SOCKET clientSocket, uint32_t id, SOCKADDR_IN& clientaddr, SessionConfig& sessionInfo)
