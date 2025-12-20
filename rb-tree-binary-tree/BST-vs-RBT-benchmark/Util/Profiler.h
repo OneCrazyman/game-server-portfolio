@@ -56,7 +56,13 @@ public:
 	~Profiler();
 
 	static bool DataOutText(const char* szFileName);
-
+	static void Clear()
+	{
+		std::lock_guard<std::mutex> profilesLock(mtx);
+		allProfiles.clear();
+		tlsContext = nullptr;
+		isInit = false;
+	}
 private:
 	void CheckInit();
 	void Initialize();

@@ -5,6 +5,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Tree">
+      <UniqueIdentifier>{155d994e-b41a-486c-a526-f4579fcdd32d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util\Profiler.h">
@@ -19,6 +22,13 @@
     <ClInclude Include="Util\SystemLogger.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="BinaryTree.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="RBtree.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="DataSetMaker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Util\SystemLogger.cpp">
