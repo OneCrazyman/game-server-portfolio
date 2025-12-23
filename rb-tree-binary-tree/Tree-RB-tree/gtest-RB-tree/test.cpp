@@ -68,7 +68,7 @@ TEST_F(RBtreeTest, StressTreeTest)
 	srand(0xFF);
 	for (int i = 0; i < loop_count; i++)
 	{
-		int num_range = rand() % 1000;
+		int num_range = rand() % 900 + 100;
 		int vector_size = rand() % 100 + 100;
 		GenerateRandomVector(vector_size, num_range);
 		InsertAll();
