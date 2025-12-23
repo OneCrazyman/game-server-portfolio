@@ -1,10 +1,11 @@
 # packet-code-generator
-엑셀 기반 패킷 자동 코드 생성기
-패킷정의를 엑셀에 작성 -> 파싱하여 Stub(서버 패킷 핸들러)의 기본 코드를 자동으로 생성하는 유틸
+
+- 엑셀 기반 패킷 자동 코드 생성기
+- 패킷정의를 엑셀에 작성 -> 파싱하여 Stub(서버 패킷 핸들러)의 기본 코드를 자동으로 생성하는 유틸
 
 ## Stub 파트 (REQ)
 `Packet_Config.xlsx`  
-![alt text](picture/image-1.png)
+![alt text](img/image-1.png)
 > 패킷 case에 필요한 type과 name으로 행을 추가 가능   
 (새로운 case가 다음 행에 나올때까지 같은 case로 인식)
 

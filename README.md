@@ -1,26 +1,50 @@
-# game-server-portfolio
-
+# 최재원의 포트폴리오
+<img width="189" height="159" alt="image" src="https://github.com/user-attachments/assets/0fd950b8-9cbb-4a19-baf9-6ee70fc9bf41" />
 게임 서버 관련 프로젝트를 정리하였습니다.
-
+<br>
 <br>
 
-## [iocp-chatting-server](./iocp-chatting-server/)  
-
-> IOCP 기반 멀티스레드 채팅 서버  
-> 비동기 I/O 모델을 활용한 효율적인 세션 관리 및 패킷 처리 구조 구현
-
-<br>
- 
-## [packet-code-generator](./packet-code-generator/)  
-> Excel로 패킷 정의를 관리하고 Stub / Proxy 코드를 자동 생성하는 유틸  
-> 서버·클라이언트 간 패킷 구조 일관성을 유지하고 개발 효율성을 향상하는것이 목표
-
+## Core Server Projects
+### `IOCP Chatting Echo Server`
+> - IOCP 기반 멀티스레드 채팅 서버
+> - 비동기 I/O 모델을 활용한 세션 관리 및 패킷 처리, 확장 가능한 객체지향적인 서버 설계 및 구현  
+> - 사용: `c++`
+>   
+> 👉 [프로젝트 바로가기](./iocp-chatting-server/)
+> 
+> <img width="500" height="741" alt="image" src="https://github.com/user-attachments/assets/6a95b750-c852-4db9-899e-68d9e86012ab" />
 <br>
 
-## [util](./util/)
-> 게임 서버 개발에 유용한 유틸리티 프로젝트  
-> 파서, 오브젝트 풀, 직렬화 버퍼, 링버퍼, 프로파일러, 로거 등 자주 쓰이는 기능들을 포함
+## Utilities
+### `Packet Code Generator`
+> - EXCEL을 사용하여 패킷 정의를 관리하고 Stub / Proxy 코드를 자동 생성  
+> - 서버·클라이언트 간 패킷 구조 일관성을 유지하고 개발 효율성을 향상하는것이 목표
+> - 사용: `c#`  
+>
+> 👉 [프로젝트 바로가기](./packet-code-generator/)
+> 
+> <img width="359" height="190" alt="image" src="https://github.com/user-attachments/assets/15365b1b-2f5e-4cc3-91fd-f121ec3a686b" />
 
+### `Util`
+> - 게임 서버에 자주 사용되는 유틸리티 모음  
+> - 프로파일러, 링버퍼, 직렬화 버퍼, 오브젝트 풀 등 자주 쓰이는 기능들을 클래스화하여 정리
+> - 사용: `c++`  
+>
+> 👉 [프로젝트 바로가기](./packet-code-generator/)
+>
+> <img width="500" height="305" alt="image" src="https://github.com/user-attachments/assets/10a27544-4909-4749-899b-44de2624c3f9" /> 
+<br>
+
+## Data Structures & Performace
+### `RB Tree VS BST Tree`
+> - Red-Black Tree와 Binary Search Tree 직접 구현 및 성능 비교  
+> - GDI로 그래픽화여 기능 시연 및 조작
+> - 삽입/삭제/검색 로직 구현
+> - 테스트 코드 기반 기능 검증
+> - 대량 연산 환경에서 벤치마크 수행  
+> - 사용: `c++` `gdi`
+> 
+> 👉 [프로젝트 바로가기](./rb-tree-binary-tree/)
 <br>
 
 ---
