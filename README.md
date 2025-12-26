@@ -1,5 +1,4 @@
 # 최재원의 포트폴리오
-<img width="189" height="159" alt="image" src="https://github.com/user-attachments/assets/0fd950b8-9cbb-4a19-baf9-6ee70fc9bf41" />
 게임 서버 관련 프로젝트를 정리하였습니다.
 <br>
 <br>
@@ -30,7 +29,7 @@
 > - 프로파일러, 링버퍼, 직렬화 버퍼, 오브젝트 풀 등 자주 쓰이는 기능들을 클래스화하여 정리
 > - 사용: `c++`  
 >
-> 👉 [프로젝트 바로가기](./packet-code-generator/)
+> 👉 [프로젝트 바로가기](./util/)
 >
 > <img width="500" height="305" alt="image" src="https://github.com/user-attachments/assets/10a27544-4909-4749-899b-44de2624c3f9" /> 
 <br>
@@ -45,6 +44,8 @@
 > - 사용: `c++` `gdi`
 > 
 > 👉 [프로젝트 바로가기](./rb-tree-binary-tree/)
+>
+> <img width="500" height="489" alt="Image" src="https://github.com/user-attachments/assets/ad382a68-2ffe-4c83-af39-ca05f7c57a62" />
 <br>
 
 ---

@@ -18,19 +18,18 @@
 ![Image](https://github.com/user-attachments/assets/14a32edc-45ac-42f7-89ef-4dbf97326865)
 > 레드-블랙 트리 시연
 
+<img width="600" height="348" alt="Image" src="https://github.com/user-attachments/assets/01b00ada-02bf-4b0a-b08c-58ef92983e47" />
 
-![Animation](https://github.com/user-attachments/assets/a13ddb3b-1f17-42a0-825b-fe6479600bee)
-> 단위테스트
+> 테스트
 <br> 
 
 ### 이진 트리
 ![Animation (2)](https://github.com/user-attachments/assets/121e9177-4c47-41d4-831f-d9f18153e200)
-> 이진 트리 시연
+ 이진 트리 시연
 
+<img width="600" height="617" alt="Image" src="https://github.com/user-attachments/assets/fa6953d2-ac87-4433-99b6-0ef93e69f2eb"/>
 
-<img width="939" height="617" alt="Image" src="https://github.com/user-attachments/assets/fa6953d2-ac87-4433-99b6-0ef93e69f2eb"/>
-
-> 단위테스트
+> 테스트
 <br>
 
 ## 비교 테스트 (INSERT,SEARCH)
