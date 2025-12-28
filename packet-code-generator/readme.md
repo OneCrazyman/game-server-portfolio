@@ -97,7 +97,7 @@ void PacketProcess_Auto::DispatchLobbyEnter(uint32_t sessionId, CPacket& packet)
 ```
 
 ## Proxy 파트 (RES)
-![alt text](picture/image.png)
+![alt text](img/image.png)
 > 위와 동일 
 
 ### _Auto files 생성 예시
