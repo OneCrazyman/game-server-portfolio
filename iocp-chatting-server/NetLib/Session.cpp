@@ -53,9 +53,8 @@ void Session::Clear()
 
 bool Session::PostRecv()
 {
-	DWORD flags = 0;
-	DWORD recvbytes = 0;
 	WSABUF buf[2] = {};
+	DWORD flags = 0;
 
 	std::unique_lock<std::mutex> lock(mutex_);
 	if (!this->IsActive()) {
@@ -69,7 +68,7 @@ bool Session::PostRecv()
 	buf[0].len = recvQ_.DirectEnqueueSize();
 	buf[1].buf = recvQ_.GetBufferPtr();
 	buf[1].len = recvQ_.GetFreeSize() - buf[0].len;
-	int retRecv = WSARecv(socket_, buf, 2, &recvbytes, &flags, (WSAOVERLAPPED*)&overlappedRecv_, NULL);
+	int retRecv = WSARecv(socket_, buf, 2, NULL, &flags, (WSAOVERLAPPED*)&overlappedRecv_, NULL);
 	if (retRecv == SOCKET_ERROR) {
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING) {
@@ -105,7 +104,7 @@ bool Session::PostSend()
 	buf[1].len = sendQ_.GetUseSize() - buf[0].len;
 	lock.unlock();
 
-	int retSend = WSASend(socket_, buf, 2, &sendbytes, 0, (WSAOVERLAPPED*)&overlappedSend_, NULL);
+	int retSend = WSASend(socket_, buf, 2, NULL, NULL, (WSAOVERLAPPED*)&overlappedSend_, NULL);
 	if (retSend == SOCKET_ERROR) {
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING) {
